@@ -3,14 +3,21 @@ import cv2
 
 
 def erosao(source, element):
-    for i in range(source.shape[0]):
-        for j in range(source.shape[1]):
-            compare = source[i:element.shape[0], j::element.shape[1]]
-            print(compare)
+    img = np.pad(source, pad_width=int((element.shape[0]-1)/2), mode='constant', constant_values=0)
+    source = np.pad(source, pad_width=int((element.shape[0]-1)/2), mode='constant', constant_values=0)
+    for i in range(int(source.shape[0]-(element.shape[0]-1))):
+        for j in range(int(source.shape[1]-(element.shape[1]-1))):
+            compare = source[i:(element.shape[0]+i), j:(element.shape[1]+j)]
+            if(np.array_equal(compare, element)):
+                img[int(((element.shape[0]-1)/2)+i), int(((element.shape[1])/2)+j)] = 1
+                source[i:(element.shape[0]+i), j:(element.shape[1]+j)] = 0
+            else:
+                img[int(((element.shape[0]-1)/2)+i), int(((element.shape[1])/2)+j)] = 0
+    return img
 
 
-def printImg(img, windowName):
-    newimg = np.zeros((img.shape[0]*50, img.shape[1]*50), np.uint8)
+def printImg(img, windowName, tam):
+    newimg = np.zeros((img.shape[0]*tam, img.shape[1]*tam), np.uint8)
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
             tam = newimg.shape[0]/img.shape[0]
