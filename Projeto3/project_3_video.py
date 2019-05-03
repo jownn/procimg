@@ -27,27 +27,26 @@ thickness = cv2.LINE_AA
 while(cap.isOpened()):
     # Capture frame-by-frame
     ret, frame = cap.read()
-    if ret:
 
+    if ret:
         gray_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         im_gauss = cv2.GaussianBlur(gray_image, (5, 5), 0)
         ret, thresh = cv2.threshold(im_gauss, 247, 255, 0)
 
         # get contours
-        contours, _ = cv2.findContours(
+        _, contours, _ = cv2.findContours(
             thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         count = 1
 
-        for contour in contours:
-
+        for contour in contours:            
             area = cv2.contourArea(contour)
-            if area >= 1000 and area <= 3000:
+            if area >= 1000 and area <= 4000:
                 rect = cv2.minAreaRect(contour)
                 box = cv2.boxPoints(rect)
                 box = np.int0(box)
-
+                
                 x, y, w, h = cv2.boundingRect(contour)
 
                 src_pts = box.astype("float32")
@@ -62,10 +61,14 @@ while(cap.isOpened()):
                 M = cv2.getPerspectiveTransform(src_pts, dst_pts)
 
                 # directly warp the rotated rectangle to get the straightened rectangle
-                dado = cv2.warpPerspective(gray_image, M, (w, h))
+                dado = cv2.warpPerspective(gray_image, M, (w, h),borderMode=cv2.BORDER_CONSTANT, borderValue=(255, 255, 255))
                 # dado = gray_image[y:y+h, x:x+w]
                 dado = cv2.resize(dado, None, fx=3, fy=3,
                                   interpolation=cv2.INTER_CUBIC)
+
+                
+                # kernel = np.ones((5,5), np.uint8)
+                # dado = cv2.erode(dado, kernel, iterations=5)
 
                 # Detect blobs.
                 keypoints = detector.detect(dado)
