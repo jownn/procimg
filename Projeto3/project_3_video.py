@@ -12,8 +12,8 @@ cap = cv2.VideoCapture(filename)
 # cap = sk.vread(filename)
 
 # Check if camera opened successfully
-if (not cap.isOpened()):
-    print("Error opening video stream or file")
+# if (not cap.isOpened()):
+#     print("Error opening video stream or file")
 
 
 # Set up the detector with default parameters.
@@ -39,10 +39,10 @@ while(cap.isOpened()):
             thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         count = 1
-
+        
         for contour in contours:            
             area = cv2.contourArea(contour)
-            if area >= 1000 and area <= 4000:
+            if area >= 1000:
                 rect = cv2.minAreaRect(contour)
                 box = cv2.boxPoints(rect)
                 box = np.int0(box)
@@ -67,16 +67,16 @@ while(cap.isOpened()):
                                   interpolation=cv2.INTER_CUBIC)
 
                 
-                # kernel = np.ones((5,5), np.uint8)
-                # dado = cv2.erode(dado, kernel, iterations=5)
+                kernel = np.ones((1,1), np.uint8)
+                dado = cv2.erode(dado, kernel, iterations=5)
 
                 # Detect blobs.
                 keypoints = detector.detect(dado)
 
-                for marker in keypoints:
-                    xd, yd = np.int(marker.pt[0]), np.int(marker.pt[1])
-                    pos = np.int(marker.size / 2)
-                    cv2.circle(dado, (xd, yd), 3, 255, -1)
+                # for marker in keypoints:
+                    # xd, yd = np.int(marker.pt[0]), np.int(marker.pt[1])
+                    # pos = np.int(marker.size / 2)
+                    # cv2.circle(dado, (xd, yd), 3, 255, -1)
 
                 # Get text siza
                 text = str(len(keypoints))
@@ -93,7 +93,7 @@ while(cap.isOpened()):
         cv2.imshow('Frame', frame)
 
         # Press Q on keyboard to  exit
-        if cv2.waitKey(30) & 0xFF == ord('q'):
+        if cv2.waitKey(25) & 0xFF == ord('q'):
             break
 
     # Break the loop
